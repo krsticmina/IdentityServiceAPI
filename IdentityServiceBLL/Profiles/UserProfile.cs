@@ -9,6 +9,7 @@ namespace IdentityServiceBLL.Profiles
         public UserProfile() 
         {
             CreateMap<UserModel, User>().ReverseMap();
+            CreateMap<UserRegistrationModel, User>().ReverseMap();
         }
     }
 }

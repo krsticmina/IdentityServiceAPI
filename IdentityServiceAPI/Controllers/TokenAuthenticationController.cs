@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
-using IdentityServiceAPI.Models;
+using IdentityServiceAPI.Dtos;
 using IdentityServiceBLL.Models;
 using IdentityServiceBLL.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace IdentityServiceAPI.Controllers
@@ -19,6 +20,7 @@ namespace IdentityServiceAPI.Controllers
         private readonly IConfiguration configuration;
         private readonly IMapper mapper;
 
+
         public TokenAuthenticationController(IUserService service, IConfiguration configuration, IMapper mapper)
         {
             this.service = service ?? throw new ArgumentNullException(nameof(service));
@@ -31,7 +33,10 @@ namespace IdentityServiceAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto model)
         {
-            model.Password = HashPassword(model.Password);
+            var salt = await service.FindUser(model.UserName);
+
+            model.Password = HashPassword(model.Password, salt);
+
             var user = await service.ValidateUserCredentials(mapper.Map<UserLoginModel>(model));
 
             var userForClaims = mapper.Map<UserDto>(user);
@@ -62,13 +67,48 @@ namespace IdentityServiceAPI.Controllers
             return Ok(tokenToReturn);
         }
 
-        private static string HashPassword(string password) 
+        [HttpPost("Register")]
+        public async Task<ActionResult> RegisterUser([FromBody] UserRegistrationDto user) 
         {
-            byte[] encode = new byte[password.Length];
-            encode = Encoding.UTF8.GetBytes(password);
-            password = Convert.ToBase64String(encode);
-            return password;
 
+            user.Salt = createSalt();
+
+            user.Password = HashPassword(user.Password, user.Salt);
+
+            var employeeToAdd = mapper.Map<UserRegistrationModel>(user);
+
+            var result = await service.RegisterUser(employeeToAdd);
+
+            return CreatedAtAction(nameof(RegisterUser), result);
+        }
+
+        private static string HashPassword(string password, string salt)
+        { 
+            byte[] passbytes = Encoding.Unicode.GetBytes(password);
+
+            byte[] saltbytes = Encoding.Unicode.GetBytes(salt);
+
+            byte[] res = new byte[saltbytes.Length + passbytes.Length];
+
+            for (int i = 0; i < passbytes.Length; i++)
+            {
+                res[i] = passbytes[i];
+            }
+            for (int i = 0; i < saltbytes.Length; i++)
+            {
+                res[passbytes.Length + i] = saltbytes[i];
+            }
+
+            byte[] hash = SHA256.HashData(res);
+
+            return Convert.ToBase64String(hash);  
+        }
+
+        private static string createSalt() 
+        {
+            byte[] salt = RandomNumberGenerator.GetBytes(32);
+
+            return Convert.ToBase64String(salt);
         }
     }
 }

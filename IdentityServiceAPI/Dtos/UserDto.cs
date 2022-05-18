@@ -1,4 +1,4 @@
-﻿namespace IdentityServiceAPI.Models
+﻿namespace IdentityServiceAPI.Dtos
 {
     public class UserDto
     {

@@ -18,5 +18,21 @@ namespace IdentityServiceDAL.Repositories
             return await context.Users.Where(u => u.UserName.Equals(username) && u.Password.Equals(password)).SingleOrDefaultAsync();
         }
 
+        public async Task<string?> FindUserAndGetSalt(string username) 
+        {
+            var user = await context.Users.Where(u => u.UserName.Equals(username)).SingleOrDefaultAsync();
+            if (user == null) return null;
+            return user.Salt;
+        }
+
+        public async Task RegisterUser(User user)
+        {
+            await context.Users.AddAsync(user);
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await context.SaveChangesAsync() >= 0;
+        }
     }
 }

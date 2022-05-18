@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServiceAPI.Models
+namespace IdentityServiceAPI.Dtos
 {
     public class UserLoginDto
     {

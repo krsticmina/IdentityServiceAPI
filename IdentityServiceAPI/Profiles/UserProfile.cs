@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using IdentityServiceAPI.Models;
+using IdentityServiceAPI.Dtos;
 using IdentityServiceBLL.Models;
 
 namespace IdentityServiceAPI.Profiles
@@ -11,6 +11,8 @@ namespace IdentityServiceAPI.Profiles
             CreateMap<UserLoginDto, UserLoginModel>().ReverseMap();
 
             CreateMap<UserDto, UserModel>().ReverseMap();
+
+            CreateMap<UserRegistrationDto, UserRegistrationModel>().ReverseMap();
         }
     }
 }
