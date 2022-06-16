@@ -42,7 +42,7 @@ namespace IdentityServiceAPI.Controllers
             var userForClaims = mapper.Map<UserDto>(user);
 
             var securityKey = new SymmetricSecurityKey(
-                Encoding.ASCII.GetBytes(configuration["JwtAuthentication:SecretForKey"]));
+                Encoding.ASCII.GetBytes(configuration["Authentication:SecretForKey"]));
             var signingCredentials = new SigningCredentials(
                 securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -54,8 +54,8 @@ namespace IdentityServiceAPI.Controllers
             claimsForToken.Add(new Claim("Username", userForClaims.UserName));
 
             var jwtSecurityToken = new JwtSecurityToken(
-                configuration["JwtAuthentication:Issuer"],
-                configuration["JwtAuthentication:Audience"],
+                configuration["Authentication:Issuer"],
+                configuration["Authentication:Audience"],
                 claimsForToken,
                 DateTime.UtcNow,
                 DateTime.UtcNow.AddMinutes(15),
@@ -110,5 +110,6 @@ namespace IdentityServiceAPI.Controllers
 
             return Convert.ToBase64String(salt);
         }
+
     }
 }

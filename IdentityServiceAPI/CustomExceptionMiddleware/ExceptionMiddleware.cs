@@ -1,4 +1,5 @@
 ﻿using IdentityServiceBLL.Exceptions;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
 
 namespace IdentityServiceAPI.CustomExceptionMiddleware

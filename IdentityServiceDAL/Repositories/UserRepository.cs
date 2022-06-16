@@ -18,7 +18,7 @@ namespace IdentityServiceDAL.Repositories
             return await context.Users.Where(u => u.UserName.Equals(username) && u.Password.Equals(password)).SingleOrDefaultAsync();
         }
 
-        public async Task<string?> FindUserAndGetSalt(string username) 
+        public async Task<string?> FindUserAndGetSalt(string username)
         {
             var user = await context.Users.Where(u => u.UserName.Equals(username)).SingleOrDefaultAsync();
             if (user == null) return null;
@@ -33,6 +33,11 @@ namespace IdentityServiceDAL.Repositories
         public async Task<bool> SaveChangesAsync()
         {
             return await context.SaveChangesAsync() >= 0;
+        }
+
+        public async Task<User?> FindUserByUsername(string username, string email) 
+        {
+            return await context.Users.Where(u => u.UserName.Equals(username) || u.Email.Equals(email)).SingleOrDefaultAsync();
         }
     }
 }

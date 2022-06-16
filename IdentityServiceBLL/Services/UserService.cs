@@ -46,6 +46,8 @@ namespace IdentityServiceBLL.Services
 
             var user = mapper.Map<User>(userToAdd);
 
+            await CheckIfUserExists(user.UserName, user.Email);
+
             await repository.RegisterUser(user);
 
             await repository.SaveChangesAsync();
@@ -55,5 +57,14 @@ namespace IdentityServiceBLL.Services
             return employeeToReturn;
         }
 
+        private async Task CheckIfUserExists(string username, string email) 
+        {
+            var user = await repository.FindUserByUsername(username, email);
+            
+            if (user != null) 
+            {
+                throw new Exception("User already exists!");
+            }
+        }
     }
 }
